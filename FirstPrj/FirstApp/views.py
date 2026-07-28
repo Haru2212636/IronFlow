@@ -1,43 +1,18 @@
-"""Views module for FirstApp handling customer transactions and searches."""
-
-from django.http import HttpResponse
 from django.shortcuts import render
-from .forms import CustomerForm, CustomerSearchForm
-from .models import Customer
+from django.http import HttpResponse
 
+def index(request):
+    # 最初のページ表示用
+    return render(request, "FirstApp/index.html")
 
-def add_customer(request):
-    """View to handle creating a new customer via POST request."""
+def add_log(request):
+    # HTMXからの送信（POSTリクエスト）を受け取った時の処理
     if request.method == "POST":
-        form = CustomerForm(request.POST)
-        if form.is_valid():
-            Customer.objects.create(
-                first_name=form.cleaned_data["first_name"],
-                last_name=form.cleaned_data["last_name"],
-                email=form.cleaned_data["email"],
-                address_id=form.cleaned_data["address_id"],
-                store_id=form.cleaned_data["store_id"],
-            )
-            return HttpResponse("Customer created successfully!")
-    else:
-        form = CustomerForm()
-
-    return render(request, "FirstApp/add_customer.html", {"form": form})
-
-
-def search_customers(request):
-    """View to handle searching customers via GET request."""
-    form = CustomerSearchForm(request.GET)
-    customers = []
-
-    if form.is_valid() and form.cleaned_data.get("search_query"):
-        query = form.cleaned_data["search_query"]
-        customers = Customer.objects.filter(first_name__icontains=query)
-    else:
-        customers = Customer.objects.all()[:10]
-
-    return render(
-        request,
-        "FirstApp/search_customers.html",
-        {"form": form, "customers": customers},
-    )
+        exercise = request.POST.get("exercise", "")
+        weight = request.POST.get("weight", "")
+        
+        # ページ全体ではなく、追加したい「1行分」のHTMLだけを作って返す
+        html_fragment = f'<li style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>{exercise}</strong>: {weight} kg</li>'
+        return HttpResponse(html_fragment)
+    
+    return HttpResponse("")

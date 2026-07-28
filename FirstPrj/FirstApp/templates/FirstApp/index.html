@@ -6,17 +6,27 @@
     <title>IronFlow - Workout Tracker</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- ① HTMXのJavaScriptファイルを読み込みます -->
+    <script src="{% static 'htmx.min.js' %}" defer></script>
 </head>
-<body>
+<!-- ② フォーム送信時のセキュリティ対策（CSRFトークン）を全体に適用します -->
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <header class="navbar">
         <h1>IronFlow</h1>
     </header>
 
-    <main class="page-container">
+    <main class="page-container" style="flex-direction: column; align-items: center; gap: 20px;">
+        <!-- 筋トレ記録フォーム -->
         <section class="card">
             <h2>Log Your Workout</h2>
-            <form action="#" method="post">
-                {% csrf_token %}
+            
+            <!-- ③ ここが一番重要です！
+                 - hx-post="/add-log": ページ遷移せず、/add-log にデータを送る
+                 - hx-target="#workout-list": 帰ってきた結果を #workout-list の中に送る
+                 - hx-swap="afterbegin": リストの一番上に追加する
+                 - hx-on::after-request="this.reset()": 送信が終わったら入力欄を空にする
+            -->
+            <form hx-post="/add-log" hx-target="#workout-list" hx-swap="afterbegin" hx-on::after-request="this.reset()">
                 <div class="form-group">
                     <label for="exercise-name">Exercise Name</label>
                     <input type="text" id="exercise-name" name="exercise" placeholder="e.g., Bench Press" required>
@@ -29,6 +39,14 @@
 
                 <button type="submit" class="btn">Save Workout</button>
             </form>
+        </section>
+
+        <!-- ④ 追加されたログがページリロードなしでここに増えていきます -->
+        <section class="card">
+            <h2>Recent Workouts</h2>
+            <ul id="workout-list" style="list-style: none; padding: 0;">
+                <!-- ここに動的に追加されます -->
+            </ul>
         </section>
     </main>
 </body>
