@@ -44,8 +44,15 @@
         <!-- ④ 追加されたログがページリロードなしでここに増えていきます -->
         <section class="card">
             <h2>Recent Workouts</h2>
-            <ul id="workout-list" style="list-style: none; padding: 0;">
-                <!-- ここに動的に追加されます -->
+                
+<ul id="workout-list">
+  {% for log in logs %}
+    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+      <strong>{{ log.exercise }}</strong>: {{ log.weight }} kg
+    </li>
+  {% endfor %}
+
+
             </ul>
         </section>
     </main>

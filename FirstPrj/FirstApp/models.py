@@ -56,3 +56,12 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+# models.py の末尾に追加
+class WorkoutLog(models.Model):
+    exercise = models.CharField(max_length=100)
+    weight = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.exercise} - {self.weight}kg"
